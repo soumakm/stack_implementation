@@ -1,0 +1,1 @@
+g++ -Wall -pedantic -std=c++11 -g -o proj3.x test_stack1.cpp

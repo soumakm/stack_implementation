@@ -1,0 +1,5 @@
+I used list STL container as underlying adaptee class. Thus, clear() function
+depends upon the clear() function of the list.
+STL list container has complexity n (size of list) as worst case complexity.
+Thus, the worst case complexity of my clear() function is also O(n), where n is
+the number of element in the stack.

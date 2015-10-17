@@ -69,9 +69,10 @@ int main()
 	//some variables for evaluation
 	string str1;
 	string str2;
-	int val1;
-	int val2;
-	int val3;
+	string str3;
+	float val1;
+	float val2;
+	float val3;
 	bool nonNumeric;
 
 	while(1)
@@ -80,6 +81,7 @@ int main()
 		oprt.clear();
 		tokens.clear();
 		eval.clear();
+		nonNumeric = false;
 		cout << "Enter infix expression (\"exit\" to quit): ";
 		if(getline(cin, input))
 		{
@@ -187,8 +189,8 @@ int main()
 	        		str2 = eval.top();
 	        		eval.pop();
 
-	        		val1 = atoi(str1.c_str());
-	        		val2 = atoi(str2.c_str());
+	        		val1 = stof(str1.c_str());
+	        		val2 = stof(str2.c_str());
 	        		if(x == "+")
 	        			 val3 = val1+val2;
 	        		else if (x == "-")
@@ -222,7 +224,9 @@ int main()
 			else
 			{
 				cout << "Postfix expression:" << output << endl;
-				cout << "Postfix evaluation:" << output << " = " << eval.top() << endl;
+				cout << "Postfix evaluation:" << output << " = ";
+				printf("%g", stof(eval.top())); 
+				cout << endl;
 
 			}
 		}

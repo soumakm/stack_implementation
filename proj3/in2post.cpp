@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <string.h>
 #include <vector>
 #include <sstream>
 #include "stack.h"
@@ -30,17 +31,7 @@ bool isOperator(string x)
 //This function returns true if 2nd argument has lower precedence than the first
 bool isLowerPrecedence(string operator1, string operator2)
 {
-	   /* if ( operator1 == "*" || operator1 == "/" )
-           return true;
-        else if ( operator1 == "+" || operator1 == "-" )
-        {	
-           if ( operator2 == "*" || operator2 == "/" )
-              return false;
-           else
-              return true;
-        }
-
-        return false;*/
+	   
         if(operator2 == "-" && operator1 != "-")
         	return true;
         else if (operator2 == "+" && (operator1 == "*" || operator1 == "/"))
@@ -49,6 +40,11 @@ bool isLowerPrecedence(string operator1, string operator2)
         	return true;
         else
         	return false;
+}
+
+bool isNumeric(string & s)
+{
+	return( strspn( s.c_str(), ".0123456789" ) == s.size() );
 }
 
 int main()
@@ -70,11 +66,20 @@ int main()
 	string errorMsg;
 	string last;
 
+	//some variables for evaluation
+	string str1;
+	string str2;
+	int val1;
+	int val2;
+	int val3;
+	bool nonNumeric;
+
 	while(1)
 	{
 		output = "";
 		oprt.clear();
 		tokens.clear();
+		eval.clear();
 		cout << "Enter infix expression (\"exit\" to quit): ";
 		if(getline(cin, input))
 		{
@@ -148,6 +153,68 @@ int main()
         		oprt.pop();
         	}
 	        
+        	//if operands are numeric
+        	tokens.clear();
+        	stringstream out(output);
+			while (out >> buf)
+				tokens.push_back(buf);
+
+	        for (auto & x: tokens)
+	        {
+	        	//step 1
+	        	if(isOperand(x))
+	        	{	
+	        		if(isNumeric(x))
+	        			eval.push(x);
+	        		else
+	        		{
+	        			nonNumeric = true;
+	        			break;
+	        		}
+
+	        	}
+
+	        	//step 2
+	        	if(isOperator(x))
+	        	{
+	        		if(eval.size() < 2)
+	        		{
+	        			error = true;
+	        			errorMsg = "Stack has fewer than 2 operands.";
+	        		}
+	        		str1 = eval.top();
+	        		eval.pop();
+	        		str2 = eval.top();
+	        		eval.pop();
+
+	        		val1 = atoi(str1.c_str());
+	        		val2 = atoi(str2.c_str());
+	        		if(x == "+")
+	        			 val3 = val1+val2;
+	        		else if (x == "-")
+	        			 val3 = val2-val1;
+	        		else if (x == "*")	 
+	        			 val3 = val1*val2;
+        			else if(x == "/")
+        				val3 = val2/val1;
+	        			
+	        		eval.push(to_string(val3));
+	        	}
+
+	        }
+	        if(eval.size() > 1)
+	        {
+	        	error = true;
+	        	errorMsg = "More than 1 element left in stack.";
+	        }
+	        else if (eval.size() == 0)
+	        	eval.push("0");
+
+	        if(nonNumeric)
+	        {
+	        	eval.clear();
+	        	eval.push(output);
+	        }
 
 	        // Print output or error message
 	        if (error)
@@ -155,7 +222,7 @@ int main()
 			else
 			{
 				cout << "Postfix expression:" << output << endl;
-				cout << "Postfix evaluation:" << output << " = " << output << endl;
+				cout << "Postfix evaluation:" << output << " = " << eval.top() << endl;
 
 			}
 		}
